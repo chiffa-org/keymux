@@ -19,6 +19,10 @@ type Handler interface {
 	Handle(key []byte, val interface{}) (interface{}, error)
 }
 
+type FixedHandler interface {
+	Handle(val interface{}) (interface{}, error)
+}
+
 type job struct {
 	key []byte
 	val interface{}
@@ -114,4 +118,33 @@ func (m *Mux) Handle(key []byte, val interface{}) (interface{}, error) {
 		panic(p.reason)
 	}
 	return r.val, r.err
+}
+
+type fixed struct {
+	handler Handler
+	key     []byte
+}
+
+func Fixed(handler Handler, key []byte) FixedHandler {
+	return fixed{handler: handler, key: key}
+}
+
+func (f fixed) Handle(val interface{}) (interface{}, error) {
+	return f.handler.Handle(f.key, val)
+}
+
+type urgent struct {
+	handler Handler
+}
+
+func Urgent(handler Handler) Handler {
+	return urgent{handler: handler}
+}
+
+func (u urgent) Handle(key []byte, val interface{}) (interface{}, error) {
+	for {
+		if val, err := u.handler.Handle(key, val); err != ErrFullBuffer {
+			return val, err
+		}
+	}
 }
