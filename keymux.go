@@ -35,7 +35,6 @@ type res struct {
 }
 
 func (j job) do(handler Handler) {
-	defer close(j.res)
 	defer func() {
 		if reason := recover(); reason != nil {
 			j.res <- res{nil, panicError{reason}}
