@@ -13,7 +13,7 @@ var (
 
 type panicError struct{ reason interface{} }
 
-func (err panicError) Error() string { return "panic occurrs" }
+func (err panicError) Error() string { return "panic occurs" }
 
 type Handler interface {
 	Handle(key []byte, val interface{}) (interface{}, error)
@@ -35,7 +35,6 @@ type res struct {
 }
 
 func (j job) do(handler Handler) {
-	defer close(j.res)
 	defer func() {
 		if reason := recover(); reason != nil {
 			j.res <- res{nil, panicError{reason}}
