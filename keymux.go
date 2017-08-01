@@ -13,7 +13,7 @@ var (
 
 type panicError struct{ reason interface{} }
 
-func (err panicError) Error() string { return "panic occurrs" }
+func (err panicError) Error() string { return "panic occurs" }
 
 type Handler interface {
 	Handle(key []byte, val interface{}) (interface{}, error)
